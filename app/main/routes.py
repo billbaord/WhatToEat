@@ -126,3 +126,15 @@ def edit_recipe(id):
         form.instructions.data = recipe.instructions
         form.category.data = recipe.category_id
     return render_template('recipe_form.html', title='Edit Recipe', form=form)
+
+@bp.route('/recipe/<int:id>/delete', methods=['POST'])
+@login_required
+def delete_recipe(id):
+    recipe = Recipe.query.get_or_404(id)
+    if recipe.author != current_user:
+        flash('You can only delete your own recipes.')
+        return redirect(url_for('main.view_recipe', id=id))
+    db.session.delete(recipe)
+    db.session.commit()
+    flash('Your recipe has been deleted.')
+    return redirect(url_for('main.index'))
