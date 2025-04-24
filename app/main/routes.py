@@ -80,3 +80,21 @@ def register():
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('main.login'))
     return render_template('register.html', title='Register', form=form)
+
+@bp.route('/recipe/new', methods=['GET', 'POST'])
+@login_required
+def new_recipe():
+    form = RecipeForm()
+    if form.validate_on_submit():
+        recipe = Recipe(
+            title=form.title.data,
+            description=form.description.data,
+            instructions=form.instructions.data,
+            author=current_user,
+            category_id=form.category.data
+        )
+        db.session.add(recipe)
+        db.session.commit()
+        flash('Your recipe has been created!')
+        return redirect(url_for('main.index'))
+    return render_template('recipe_form.html', title='New Recipe', form=form)
