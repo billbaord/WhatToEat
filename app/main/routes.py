@@ -98,3 +98,31 @@ def new_recipe():
         flash('Your recipe has been created!')
         return redirect(url_for('main.index'))
     return render_template('recipe_form.html', title='New Recipe', form=form)
+
+@bp.route('/recipe/<int:id>')
+def view_recipe(id):
+    recipe = Recipe.query.get_or_404(id)
+    return render_template('view_recipe.html', recipe=recipe)
+
+@bp.route('/recipe/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_recipe(id):
+    recipe = Recipe.query.get_or_404(id)
+    if recipe.author != current_user:
+        flash('You can only edit your own recipes.')
+        return redirect(url_for('main.view_recipe', id=id))
+    form = RecipeForm()
+    if form.validate_on_submit():
+        recipe.title = form.title.data
+        recipe.description = form.description.data
+        recipe.instructions = form.instructions.data
+        recipe.category_id = form.category.data
+        db.session.commit()
+        flash('Your recipe has been updated!')
+        return redirect(url_for('main.view_recipe', id=id))
+    elif request.method == 'GET':
+        form.title.data = recipe.title
+        form.description.data = recipe.description
+        form.instructions.data = recipe.instructions
+        form.category.data = recipe.category_id
+    return render_template('recipe_form.html', title='Edit Recipe', form=form)
