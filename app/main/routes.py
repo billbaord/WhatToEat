@@ -1,49 +1,18 @@
+import os
 from flask import render_template, flash, redirect, url_for, request, current_app, send_from_directory
-from flask_login import current_user, login_user, logout_user, login_required
+from flask_login import current_user, login_required, login_user, logout_user
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from app import db
 from app.main import bp
-from app.main.forms import LoginForm, RegistrationForm, RecipeForm
-from app.models import User, Recipe, Category
+from app.main.forms import RecipeForm, LoginForm, RegistrationForm
+from app.models import Recipe, User, Category
 
 @bp.route('/')
+@bp.route('/index')
 def index():
-    query = Recipe.query
-    
-    category = request.args.get('category')
-    min_calories = request.args.get('min_calories')
-    max_calories = request.args.get('max_calories')
-    min_protein = request.args.get('min_protein')
-    max_protein = request.args.get('max_protein')
-
-    if category:
-        query = query.filter(Recipe.category_id == category)
-    if min_calories:
-        try: 
-            query = query.filter(Recipe.calories >= float(min_calories))
-        except (ValueError, TypeError): 
-            flash('Invalid minimum calories value')
-    if max_calories:
-        try: 
-            query = query.filter(Recipe.calories <= float(max_calories))
-        except (ValueError, TypeError):
-            flash('Invalid maximum calories value')
-    if min_protein: 
-        try:
-            query = query.filter(Recipe.protein <= float(min_protein))
-        except (ValueError, TypeError):
-            flash('Invalid minimum protein value')
-    if max_protein: 
-        try:
-            query = query.filter(Recipe.protein <= float(max_protein))
-        except (ValueError, TypeError):
-            flash('Invalid maximum protein value')
-    
-    recipes = query.all()
-    categories = Category.query.all()
-
-    return render_template('index.html', title='Home', recipes=recipes, categories=categories)
+    recipes = Recipe.query.all()
+    return render_template('index.html', title='Home', recipes=recipes)
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -55,7 +24,7 @@ def login():
         if user is None or not user.check_password(form.password.data):
             flash('Invalid username or password')
             return redirect(url_for('main.login'))
-        login_user(user, remember=form.remember_me_boolean)
+        login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('main.index')
@@ -85,18 +54,25 @@ def register():
 @login_required
 def new_recipe():
     form = RecipeForm()
+    categories = Category.query.all()
+    if not categories:
+        flash('No categories available. Please contact administrator.')
+        return redirect(url_for('main.index'))
     if form.validate_on_submit():
         recipe = Recipe(
             title=form.title.data,
             description=form.description.data,
+            ingredients=form.ingredients.data,
             instructions=form.instructions.data,
+            calories=form.calories.data,
+            protein=form.protein.data,
             author=current_user,
             category_id=form.category.data
         )
         db.session.add(recipe)
         db.session.commit()
         flash('Your recipe has been created!')
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.view_recipe', id=recipe.id))
     return render_template('recipe_form.html', title='New Recipe', form=form)
 
 @bp.route('/recipe/<int:id>')
@@ -115,7 +91,10 @@ def edit_recipe(id):
     if form.validate_on_submit():
         recipe.title = form.title.data
         recipe.description = form.description.data
+        recipe.ingredients = form.ingredients.data
         recipe.instructions = form.instructions.data
+        recipe.calories = form.calories.data
+        recipe.protein = form.protein.data
         recipe.category_id = form.category.data
         db.session.commit()
         flash('Your recipe has been updated!')
@@ -123,9 +102,12 @@ def edit_recipe(id):
     elif request.method == 'GET':
         form.title.data = recipe.title
         form.description.data = recipe.description
+        form.ingredients.data = recipe.ingredients
         form.instructions.data = recipe.instructions
+        form.calories.data = recipe.calories
+        form.protein.data = recipe.protein
         form.category.data = recipe.category_id
-    return render_template('recipe_form.html', title='Edit Recipe', form=form)
+    return render_template('recipe_form.html', title='Edit Recipe', form=form, recipe=recipe)
 
 @bp.route('/recipe/<int:id>/delete', methods=['POST'])
 @login_required
@@ -138,3 +120,10 @@ def delete_recipe(id):
     db.session.commit()
     flash('Your recipe has been deleted.')
     return redirect(url_for('main.index'))
+
+@bp.route('/user/<username>')
+@login_required
+def user(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    recipes = Recipe.query.filter_by(user_id=user.id).all()
+    return render_template('user.html', user=user, recipes=recipes) 
