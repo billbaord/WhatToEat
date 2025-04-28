@@ -126,4 +126,8 @@ def delete_recipe(id):
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     recipes = Recipe.query.filter_by(user_id=user.id).all()
-    return render_template('user.html', user=user, recipes=recipes) 
+    return render_template('user.html', user=user, recipes=recipes)
+
+@bp.route('/test')
+def test():
+    return render_template('test_page.html') 
