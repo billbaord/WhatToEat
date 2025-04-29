@@ -225,3 +225,24 @@ body {
     background-color: #0069d9;
     border-color: #0062cc;
 }
+
+/* Recipe Details */
+.recipe-details {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.recipe-header {
+    margin-bottom: 2rem;
+}
+
+.recipe-meta {
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+}
+
+.recipe-content {
+    margin-bottom: 2rem;
+}
+
