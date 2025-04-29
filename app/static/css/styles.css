@@ -129,3 +129,11 @@ body {
     text-align: center;
     margin-top: 1.5rem;
 }
+
+.form-check-input {
+    margin-right: 0.5rem;
+}
+
+.form-check-label {
+    user-select: none;
+}
