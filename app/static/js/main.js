@@ -55,6 +55,27 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    const loginForm = document.querySelector('.auth-form form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', function(e) {
+            const username = document.querySelector('#username');
+            const password = document.querySelector('#password');
+            
+            if (!username.value.trim()) {
+                e.preventDefault();
+                alert('Please enter your username');
+                username.focus();
+                return false;
+            }
+            
+            if (!password.value) {
+                e.preventDefault();
+                alert('Please enter your password');
+                password.focus();
+                return false;
+            }
+        });
+    }
 
     // Add smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
