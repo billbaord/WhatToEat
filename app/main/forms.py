@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, SelectField
-from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, SelectField, FloatField
+from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError, NumberRange
 from app.models import User, Category
 
 class LoginForm(FlaskForm):
@@ -29,7 +29,10 @@ class RegistrationForm(FlaskForm):
 class RecipeForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired(), Length(max=100)])
     description = TextAreaField('Description')
+    ingredients = TextAreaField('Ingredients')
     instructions = TextAreaField('Instructions', validators=[DataRequired()])
+    calories = FloatField('Calories', validators=[NumberRange(min=0)])
+    protein = FloatField('Protein', validators=[NumberRange(min=0)])
     category = SelectField('Category', coerce=int)
     submit = SubmitField('Submit')
 
