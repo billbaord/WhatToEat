@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}{{ recipe.title }}{% endblock %}
+
+{% block content %}
+    <div class="recipe-details">
+        <div class="recipe-header">
+            <h1>{{ recipe.title }}</h1>
+            <div class="recipe-meta">
+                <span>By {{ recipe.author.username }}</span>
+                <span>Category: {{ recipe.category.name }}</span>
+                <span>Calories: {{ recipe.calories }}</span>
+                <span>Protein: {{ recipe.protein }}g</span>
+            </div>
+        </div>
+
+        <div class="recipe-content">
+            <h2>Description</h2>
+            <p>{{ recipe.description }}</p>
+
+            <h2>Ingredients</h2>
+            <p>{{ recipe.ingredients|nl2br }}</p>
+
+            <h2>Instructions</h2>
+            <p>{{ recipe.instructions|nl2br }}</p>
+        </div>
+
+        {% if current_user.is_authenticated and current_user.id == recipe.user_id %}
+            <div class="recipe-actions">
+                <a href="{{ url_for('main.edit_recipe', id=recipe.id) }}" class="btn btn-primary">Edit Recipe</a>
+                <form action="{{ url_for('main.delete_recipe', id=recipe.id) }}" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger delete-recipe">Delete Recipe</button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
