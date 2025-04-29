@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+    <div class="recipe-list">
+        {% if recipes %}
+            {% for recipe in recipes %}
+                <div class="card recipe-card">
+                    <div class="card-body">
+                        <h3 class="card-title">{{ recipe.title }}</h3>
+                        <p class="card-text">{{ recipe.description }}</p>
+                        <div class="recipe-meta">
+                            <span>Calories: {{ recipe.calories }}</span>
+                            <span>Protein: {{ recipe.protein }}g</span>
+                            <span>Category: {{ recipe.category.name }}</span>
+                        </div>
+                        <a href="{{ url_for('main.view_recipe', id=recipe.id) }}" class="btn btn-primary">View Recipe</a>
+                        {% if current_user.is_authenticated and current_user.id == recipe.user_id %}
+                            <a href="{{ url_for('main.edit_recipe', id=recipe.id) }}" class="btn btn-secondary">Edit</a>
+                            <form action="{{ url_for('main.delete_recipe', id=recipe.id) }}" method="POST" style="display: inline;">
+                                <button type="submit" class="btn btn-danger delete-recipe">Delete</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-info">
+                No recipes found. {% if current_user.is_authenticated %}Create a new recipe!{% else %}Login to create recipes!{% endif %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %} 

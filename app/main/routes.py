@@ -128,6 +128,6 @@ def user(username):
     recipes = Recipe.query.filter_by(user_id=user.id).all()
     return render_template('user.html', user=user, recipes=recipes)
 
-@bp.route('/test')
-def test():
-    return render_template('test_page.html') 
+# @bp.route('/test')
+# def test():
+#     return render_template('test_page.html', title='Test Page') 
