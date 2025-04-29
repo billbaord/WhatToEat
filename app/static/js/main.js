@@ -76,6 +76,45 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add form validation for recipe form
+        const recipeForm = document.querySelector('#recipe-form');
+        if (recipeForm) {
+            recipeForm.addEventListener('submit', function(e) {
+                const title = document.querySelector('#title');
+                const description = document.querySelector('#description');
+                const ingredients = document.querySelector('#ingredients');
+                const instructions = document.querySelector('#instructions');
+                
+                if (!title.value.trim()) {
+                    e.preventDefault();
+                    alert('Please enter a title');
+                    title.focus();
+                    return false;
+                }
+                
+                if (!description.value.trim()) {
+                    e.preventDefault();
+                    alert('Please enter a description');
+                    description.focus();
+                    return false;
+                }
+                
+                if (!ingredients.value.trim()) {
+                    e.preventDefault();
+                    alert('Please enter ingredients');
+                    ingredients.focus();
+                    return false;
+                }
+                
+                if (!instructions.value.trim()) {
+                    e.preventDefault();
+                    alert('Please enter instructions');
+                    instructions.focus();
+                    return false;
+                }
+            });
+        }
 
     // Add smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -90,4 +129,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-
+})
