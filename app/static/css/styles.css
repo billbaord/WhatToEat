@@ -246,3 +246,19 @@ body {
     margin-bottom: 2rem;
 }
 
+/* User Profile */
+.user-profile {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.user-profile h1 {
+    margin-bottom: 1.5rem;
+    color: var(--dark-color);
+}
+
+.user-recipes h2 {
+    margin: 2rem 0 1rem;
+    color: var(--dark-color);
+}
