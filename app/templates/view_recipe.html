@@ -3,35 +3,74 @@
 {% block title %}{{ recipe.title }}{% endblock %}
 
 {% block content %}
-    <div class="recipe-details">
-        <div class="recipe-header">
-            <h1>{{ recipe.title }}</h1>
-            <div class="recipe-meta">
-                <span>By {{ recipe.author.username }}</span>
-                <span>Category: {{ recipe.category.name }}</span>
-                <span>Calories: {{ recipe.calories }}</span>
-                <span>Protein: {{ recipe.protein }}g</span>
-            </div>
+<div class="recipe-details">
+    <div class="recipe-header">
+        <h1>{{ recipe.title }}</h1>
+        <div class="recipe-meta">
+            <span>By {{ recipe.author.username }}</span>
+            <span>Category: {{ recipe.category.name }}</span>
+            <span>Prep Time: {{ recipe.prep_time }} mins</span>
+            <span>Cook Time: {{ recipe.cook_time }} mins</span>
+            <span>Servings: {{ recipe.servings }}</span>
         </div>
+    </div>
 
-        <div class="recipe-content">
+    {% if recipe.image_url %}
+        <div class="recipe-image">
+            <img src="{{ recipe.image_url }}" alt="{{ recipe.title }}">
+        </div>
+    {% endif %}
+
+    <div class="recipe-content">
+        <div class="recipe-description">
             <h2>Description</h2>
             <p>{{ recipe.description }}</p>
-
-            <h2>Ingredients</h2>
-            <p>{{ recipe.ingredients|nl2br }}</p>
-
-            <h2>Instructions</h2>
-            <p>{{ recipe.instructions|nl2br }}</p>
         </div>
 
-        {% if current_user.is_authenticated and current_user.id == recipe.user_id %}
-            <div class="recipe-actions">
-                <a href="{{ url_for('main.edit_recipe', id=recipe.id) }}" class="btn btn-primary">Edit Recipe</a>
-                <form action="{{ url_for('main.delete_recipe', id=recipe.id) }}" method="POST" style="display: inline;">
-                    <button type="submit" class="btn btn-danger delete-recipe">Delete Recipe</button>
-                </form>
+        <div class="recipe-nutrition">
+            <h2>Nutrition Information</h2>
+            <div class="nutrition-info">
+                <div class="nutrition-item">
+                    <span class="label">Calories:</span>
+                    <span class="value">{{ recipe.calories }}</span>
+                </div>
+                <div class="nutrition-item">
+                    <span class="label">Protein:</span>
+                    <span class="value">{{ recipe.protein }}g</span>
+                </div>
             </div>
-        {% endif %}
+        </div>
+
+        <div class="recipe-ingredients">
+            <h2>Ingredients</h2>
+            <ul>
+                {% for ingredient in recipe.ingredients.split('\n') %}
+                    {% if ingredient.strip() %}
+                        <li>{{ ingredient.strip() }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="recipe-instructions">
+            <h2>Instructions</h2>
+            <ol>
+                {% for step in recipe.instructions.split('\n') %}
+                    {% if step.strip() %}
+                        <li>{{ step.strip() }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+        </div>
     </div>
+
+    {% if current_user.is_authenticated and current_user.id == recipe.author_id %}
+        <div class="recipe-actions">
+            <a href="{{ url_for('main.edit_recipe', id=recipe.id) }}" class="btn btn-secondary">Edit Recipe</a>
+            <form action="{{ url_for('main.delete_recipe', id=recipe.id) }}" method="POST" style="display: inline;">
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this recipe?')">Delete Recipe</button>
+            </form>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

@@ -1,56 +1,57 @@
 {% extends "base.html" %}
 
-{% block title %}{{ 'Edit' if recipe else 'New' }} Recipe{% endblock %}
+{% block title %}{% if form.title.data %}Edit Recipe{% else %}New Recipe{% endif %}{% endblock %}
 
 {% block content %}
-    <div class="recipe-form">
-        <h1>{{ 'Edit' if recipe else 'New' }} Recipe</h1>
-        <form method="POST" id="recipe-form">
-            {{ form.hidden_tag() }}
+<div class="recipe-form">
+    <h1>{% if form.title.data %}Edit Recipe{% else %}Add New Recipe{% endif %}</h1>
+    
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        
+        <div class="form-group">
+            {{ form.title.label }}
+            {{ form.title(class="form-control") }}
+            {% for error in form.title.errors %}
+                <span class="form-error">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.description.label }}
+            {{ form.description(class="form-control") }}
+            {% for error in form.description.errors %}
+                <span class="form-error">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-row">
             <div class="form-group">
-                {{ form.title.label }}
-                {{ form.title(class="form-control") }}
-                {% for error in form.title.errors %}
+                {{ form.prep_time.label }}
+                {{ form.prep_time(class="form-control") }}
+                {% for error in form.prep_time.errors %}
                     <span class="form-error">{{ error }}</span>
                 {% endfor %}
             </div>
+
             <div class="form-group">
-                {{ form.description.label }}
-                {{ form.description(class="form-control") }}
-                {% for error in form.description.errors %}
+                {{ form.cook_time.label }}
+                {{ form.cook_time(class="form-control") }}
+                {% for error in form.cook_time.errors %}
                     <span class="form-error">{{ error }}</span>
                 {% endfor %}
             </div>
+        </div>
+
+        <div class="form-row">
             <div class="form-group">
-              {{ form.ingredients.label }}
-              {{ form.ingredients(class="form-control", rows=5) }}
-              {% for error in form.ingredients.errors %}
-                  <span class="form-error">{{ error }}</span>
-              {% endfor %}
-          </div>
-            <div class="form-group">
-                {{ form.instructions.label }}
-                {{ form.instructions(class="form-control", rows=10) }}
-                {% for error in form.instructions.errors %}
+                {{ form.servings.label }}
+                {{ form.servings(class="form-control") }}
+                {% for error in form.servings.errors %}
                     <span class="form-error">{{ error }}</span>
                 {% endfor %}
             </div>
-            <div class="form-row">
-                <div class="form-group">
-                    {{ form.calories.label }}
-                    {{ form.calories(class="form-control", type="number", min="0", step="0.1") }}
-                    {% for error in form.calories.errors %}
-                        <span class="form-error">{{ error }}</span>
-                    {% endfor %}
-                </div>
-                <div class="form-group">
-                    {{ form.protein.label }}
-                    {{ form.protein(class="form-control", type="number", min="0", step="0.1") }}
-                    {% for error in form.protein.errors %}
-                        <span class="form-error">{{ error }}</span>
-                    {% endfor %}
-                </div>
-            </div>
+
             <div class="form-group">
                 {{ form.category.label }}
                 {{ form.category(class="form-control") }}
@@ -58,10 +59,58 @@
                     <span class="form-error">{{ error }}</span>
                 {% endfor %}
             </div>
-            <div class="form-actions">
-                {{ form.submit(class="btn btn-primary") }}
-                <a href="{{ url_for('main.index') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+
+        <div class="form-group">
+            {{ form.ingredients.label }}
+            {{ form.ingredients(class="form-control", rows=5) }}
+            {% for error in form.ingredients.errors %}
+                <span class="form-error">{{ error }}</span>
+            {% endfor %}
+            <small class="form-text text-muted">Enter each ingredient on a new line</small>
+        </div>
+
+        <div class="form-group">
+            {{ form.instructions.label }}
+            {{ form.instructions(class="form-control", rows=5) }}
+            {% for error in form.instructions.errors %}
+                <span class="form-error">{{ error }}</span>
+            {% endfor %}
+            <small class="form-text text-muted">Enter each step on a new line</small>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                {{ form.calories.label }}
+                {{ form.calories(class="form-control") }}
+                {% for error in form.calories.errors %}
+                    <span class="form-error">{{ error }}</span>
+                {% endfor %}
             </div>
-        </form>
-    </div>
+
+            <div class="form-group">
+                {{ form.protein.label }}
+                {{ form.protein(class="form-control") }}
+                {% for error in form.protein.errors %}
+                    <span class="form-error">{{ error }}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            {{ form.image.label }}
+            {{ form.image(class="form-control-file") }}
+            {% for error in form.image.errors %}
+                <span class="form-error">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                {% if form.title.data %}Save Changes{% else %}Add Recipe{% endif %}
+            </button>
+            <a href="{{ url_for('main.index') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
 {% endblock %}

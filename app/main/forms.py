@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, SelectField, FloatField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError, NumberRange
 from app.models import User, Category
@@ -13,7 +14,7 @@ class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
-    password_repeat = PasswordField('Repeat Password', validators=[DataRequired(), EqualTo('password')])
+    password2 = PasswordField('Repeat Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Register')
 
     def validate_username(self, username):
@@ -29,11 +30,15 @@ class RegistrationForm(FlaskForm):
 class RecipeForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired(), Length(max=100)])
     description = TextAreaField('Description')
-    ingredients = TextAreaField('Ingredients')
+    prep_time = FloatField('Prep Time (minutes)', validators=[NumberRange(min=0)])
+    cook_time = FloatField('Cook Time (minutes)', validators=[NumberRange(min=0)])
+    servings = FloatField('Number of Servings', validators=[NumberRange(min=1)])
+    ingredients = TextAreaField('Ingredients', validators=[DataRequired()])
     instructions = TextAreaField('Instructions', validators=[DataRequired()])
     calories = FloatField('Calories', validators=[NumberRange(min=0)])
-    protein = FloatField('Protein', validators=[NumberRange(min=0)])
+    protein = FloatField('Protein (g)', validators=[NumberRange(min=0)])
     category = SelectField('Category', coerce=int)
+    image = FileField('Recipe Image', validators=[FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])
     submit = SubmitField('Submit')
 
     def __init__(self, *args, **kwargs):

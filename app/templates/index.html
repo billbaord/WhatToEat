@@ -3,32 +3,48 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-    <div class="recipe-list">
-        {% if recipes %}
-            {% for recipe in recipes %}
-                <div class="card recipe-card">
-                    <div class="card-body">
-                        <h3 class="card-title">{{ recipe.title }}</h3>
-                        <p class="card-text">{{ recipe.description }}</p>
-                        <div class="recipe-meta">
-                            <span>Calories: {{ recipe.calories }}</span>
-                            <span>Protein: {{ recipe.protein }}g</span>
-                            <span>Category: {{ recipe.category.name }}</span>
-                        </div>
-                        <a href="{{ url_for('main.view_recipe', id=recipe.id) }}" class="btn btn-primary">View Recipe</a>
-                        {% if current_user.is_authenticated and current_user.id == recipe.user_id %}
-                            <a href="{{ url_for('main.edit_recipe', id=recipe.id) }}" class="btn btn-secondary">Edit</a>
-                            <form action="{{ url_for('main.delete_recipe', id=recipe.id) }}" method="POST" style="display: inline;">
-                                <button type="submit" class="btn btn-danger delete-recipe">Delete</button>
-                            </form>
-                        {% endif %}
-                    </div>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Don't Know what to eat?</h1>
+                <p class="subtitle">We got you.</p>
+                <div class="user-avatars">
+                    <img src="{{ url_for('static', filename='images/user-pic.jpg') }}" alt="User" class="avatar">
+                    <img src="{{ url_for('static', filename='images/user-pic.jpg') }}" alt="User" class="avatar">
+                    <img src="{{ url_for('static', filename='images/user-pic.jpg') }}" alt="User" class="avatar">
+                    <img src="{{ url_for('static', filename='images/user-pic.jpg') }}" alt="User" class="avatar">
+                    <img src="{{ url_for('static', filename='images/user-pic.jpg') }}" alt="User" class="avatar">
                 </div>
-            {% endfor %}
-        {% else %}
-            <div class="alert alert-info">
-                No recipes found. {% if current_user.is_authenticated %}Create a new recipe!{% else %}Login to create recipes!{% endif %}
+                <p class="testimonial">Our users love our recipes!</p>
             </div>
-        {% endif %}
-    </div>
+            <div class="hero-image">
+                <img src="{{ url_for('static', filename='images/main-body-food.jpg') }}" alt="Delicious Dish">
+            </div>
+        </div>
+    </section>
+
+    <!-- Hot Recipes Section -->
+    <section class="hot-recipes">
+        <h2>Hot Recipes Added By Users</h2>
+        <div class="recipe-grid">
+            {% if recipes %}
+                {% for recipe in recipes[:4] %}
+                    <div class="recipe-card">
+                        {% if recipe.image_url %}
+                            <img src="{{ recipe.image_url }}" alt="{{ recipe.title }}">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='images/main-body-food.jpg') }}" alt="Default Recipe Image">
+                        {% endif %}
+                        <div class="recipe-info">
+                            <h3>{{ recipe.title }}</h3>
+                            <a href="{{ url_for('main.view_recipe', id=recipe.id) }}" class="view-recipe">View Recipe</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="no-recipes">No recipes found yet. Be the first to add one!</p>
+            {% endif %}
+        </div>
+    </section>
 {% endblock %} 
