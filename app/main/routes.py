@@ -11,8 +11,30 @@ from app.models import Recipe, User, Category
 @bp.route('/')
 @bp.route('/index')
 def index():
-    recipes = Recipe.query.all()
-    return render_template('index.html', title='Home', recipes=recipes)
+    search = request.args.get('search', '')
+    category_id = request.args.get('category', '')
+    
+    # Base query
+    query = Recipe.query
+    
+    # Apply filters
+    if search:
+        query = query.filter(Recipe.title.ilike(f'%{search}%'))
+    if category_id and category_id.isdigit():
+        query = query.filter(Recipe.category_id == int(category_id))
+    
+    # Get all recipes with filters applied
+    recipes = query.all()
+    
+    # Get all categories for the filter dropdown
+    categories = Category.query.order_by(Category.name).all()
+    
+    return render_template('index.html', 
+                         title='Home',
+                         recipes=recipes,
+                         categories=categories,
+                         search=search,
+                         selected_category=category_id)
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
