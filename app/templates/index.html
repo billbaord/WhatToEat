@@ -52,51 +52,35 @@
         <!-- Discover Recipes Section for logged-in users -->
         <div class="discover-section">
             <h1>Discover Recipes</h1>
-            
-            <div class="filter-section">
-                <div class="search-bar">
-                    <input type="text" id="recipe-search" placeholder="Search by recipe name" class="search-input">
-                </div>
-                <div class="category-filter">
-                    <select id="category-select" class="filter-select">
-                        <option value="">All Categories</option>
-                        {% for category in categories %}
-                            <option value="{{ category.id }}">{{ category.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <button class="filter-button">Filter</button>
-            </div>
-
             <div class="recipes-grid">
-                {% for recipe in recipes %}
-                    <div class="recipe-card">
-                        <div class="recipe-image">
+                {% if recipes %}
+                    {% for recipe in recipes %}
+                        <div class="recipe-card">
                             {% if recipe.image_url %}
                                 <img src="{{ recipe.image_url }}" alt="{{ recipe.title }}">
                             {% else %}
                                 <img src="{{ url_for('static', filename='images/main-body-food.jpg') }}" alt="Default Recipe Image">
                             {% endif %}
-                        </div>
-                        <div class="recipe-info">
-                            <h2>{{ recipe.title }}</h2>
-                            <p class="recipe-description">{{ recipe.description[:100] }}{% if recipe.description|length > 100 %}...{% endif %}</p>
-                            <div class="recipe-category">
-                                <span>category: {{ recipe.category.name }}</span>
-                            </div>
-                            <div class="recipe-stats">
-                                <span class="stat-item calories">{{ recipe.calories }} cal</span>
-                                <span class="stat-item protein">{{ recipe.protein }}g protein</span>
-                                <span class="stat-item carbs">{{ recipe.carbs }}g carbs</span>
-                                <span class="stat-item fat">{{ recipe.fat }}g fat</span>
-                            </div>
-                            <div class="recipe-footer">
-                                <a href="{{ url_for('main.view_recipe', id=recipe.id) }}" class="view-recipe-btn">View Recipe</a>
-                                <span class="recipe-author">By {{ recipe.author.username }}</span>
+                            <div class="recipe-info">
+                                <h3>{{ recipe.title }}</h3>
+                                <p class="recipe-description">{{ recipe.description[:100] }}{% if recipe.description|length > 100 %}...{% endif %}</p>
+                                <div class="recipe-category">
+                                    <span>category: {{ recipe.category.name }}</span>
+                                </div>
+                                <div class="recipe-stats">
+                                    <span class="stat-item calories">{{ recipe.calories }} cal</span>
+                                    <span class="stat-item protein">{{ recipe.protein }}g protein</span>
+                                </div>
+                                <div class="recipe-footer">
+                                    <a href="{{ url_for('main.view_recipe', id=recipe.id) }}" class="view-recipe-btn">View Recipe</a>
+                                    <span class="recipe-author">By {{ recipe.author.username }}</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
+                {% else %}
+                    <p class="no-recipes">No recipes found yet. Be the first to add one!</p>
+                {% endif %}
             </div>
         </div>
     {% endif %}
@@ -105,25 +89,33 @@
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('recipe-search');
-    const categorySelect = document.getElementById('category-select');
-    const filterButton = document.querySelector('.filter-button');
+    // Get all filter buttons
+    const filterButtons = document.querySelectorAll('.filter-button');
 
-    filterButton.addEventListener('click', function() {
-        const searchQuery = searchInput.value;
-        const categoryId = categorySelect.value;
-        
-        // Construct the URL with query parameters
-        let url = `${window.location.pathname}?`;
-        if (searchQuery) {
-            url += `search=${encodeURIComponent(searchQuery)}&`;
-        }
-        if (categoryId) {
-            url += `category=${encodeURIComponent(categoryId)}`;
-        }
-        
-        // Redirect to the filtered URL
-        window.location.href = url;
+    // Add click event to all filter buttons
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const searchId = button.getAttribute('data-search');
+            const categoryId = button.getAttribute('data-category');
+            
+            const searchInput = document.getElementById(searchId);
+            const categorySelect = document.getElementById(categoryId);
+            
+            const searchQuery = searchInput.value;
+            const categoryValue = categorySelect.value;
+            
+            // Construct the URL with query parameters
+            let url = `${window.location.pathname}?`;
+            if (searchQuery) {
+                url += `search=${encodeURIComponent(searchQuery)}&`;
+            }
+            if (categoryValue) {
+                url += `category=${encodeURIComponent(categoryValue)}`;
+            }
+            
+            // Redirect to the filtered URL
+            window.location.href = url;
+        });
     });
 });
 </script>

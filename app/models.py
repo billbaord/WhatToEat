@@ -30,6 +30,7 @@ class Recipe(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+    image_url = db.Column(db.String(255))  # Store the path to the uploaded image
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)

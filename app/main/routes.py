@@ -7,34 +7,15 @@ from app import db
 from app.main import bp
 from app.main.forms import RecipeForm, LoginForm, RegistrationForm
 from app.models import Recipe, User, Category
+from datetime import datetime
 
 @bp.route('/')
 @bp.route('/index')
 def index():
-    search = request.args.get('search', '')
-    category_id = request.args.get('category', '')
-    
-    # Base query
-    query = Recipe.query
-    
-    # Apply filters
-    if search:
-        query = query.filter(Recipe.title.ilike(f'%{search}%'))
-    if category_id and category_id.isdigit():
-        query = query.filter(Recipe.category_id == int(category_id))
-    
-    # Get all recipes with filters applied
-    recipes = query.all()
-    
-    # Get all categories for the filter dropdown
-    categories = Category.query.order_by(Category.name).all()
-    
+    recipes = Recipe.query.order_by(Recipe.created_at.desc()).all()
     return render_template('index.html', 
                          title='Home',
-                         recipes=recipes,
-                         categories=categories,
-                         search=search,
-                         selected_category=category_id)
+                         recipes=recipes)
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -81,6 +62,25 @@ def new_recipe():
         flash('No categories available. Please contact administrator.')
         return redirect(url_for('main.index'))
     if form.validate_on_submit():
+        # Handle image upload
+        image_url = None
+        if form.image.data:
+            # Create recipes directory if it doesn't exist
+            recipes_dir = os.path.join(current_app.static_folder, 'images', 'recipes')
+            if not os.path.exists(recipes_dir):
+                os.makedirs(recipes_dir)
+            
+            # Save the image with a secure filename
+            filename = secure_filename(form.image.data.filename)
+            # Add timestamp to filename to make it unique
+            timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S_')
+            unique_filename = timestamp + filename
+            image_path = os.path.join(recipes_dir, unique_filename)
+            form.image.data.save(image_path)
+            
+            # Store the URL path that will be accessible from the web
+            image_url = url_for('static', filename=f'images/recipes/{unique_filename}')
+
         recipe = Recipe(
             title=form.title.data,
             description=form.description.data,
@@ -89,7 +89,8 @@ def new_recipe():
             calories=form.calories.data,
             protein=form.protein.data,
             author=current_user,
-            category_id=form.category.data
+            category_id=form.category.data,
+            image_url=image_url
         )
         db.session.add(recipe)
         db.session.commit()
@@ -111,6 +112,24 @@ def edit_recipe(id):
         return redirect(url_for('main.view_recipe', id=id))
     form = RecipeForm()
     if form.validate_on_submit():
+        # Handle image upload
+        if form.image.data:
+            # Create recipes directory if it doesn't exist
+            recipes_dir = os.path.join(current_app.static_folder, 'images', 'recipes')
+            if not os.path.exists(recipes_dir):
+                os.makedirs(recipes_dir)
+            
+            # Save the image with a secure filename
+            filename = secure_filename(form.image.data.filename)
+            # Add timestamp to filename to make it unique
+            timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S_')
+            unique_filename = timestamp + filename
+            image_path = os.path.join(recipes_dir, unique_filename)
+            form.image.data.save(image_path)
+            
+            # Store the URL path that will be accessible from the web
+            recipe.image_url = url_for('static', filename=f'images/recipes/{unique_filename}')
+
         recipe.title = form.title.data
         recipe.description = form.description.data
         recipe.ingredients = form.ingredients.data
