@@ -343,10 +343,29 @@ body {
 /* For guest view recipe cards */
 .recipe-grid .recipe-card {
     height: 300px;
+    position: relative;
+}
+
+.recipe-grid .recipe-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .recipe-grid .recipe-info {
-    padding: 15px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
+}
+
+.recipe-grid .recipe-info h3 {
+    color: white;
+    margin: 0;
+    font-size: 1.4em;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* Recipe Details */
@@ -445,20 +464,58 @@ body {
     margin-bottom: 1rem;
 }
 
+/* Auth Page Background */
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background-color: #fff;
+}
+
 /* Auth Forms */
 .auth-form {
     max-width: 400px;
-    margin: 2rem auto;
+    margin: 3rem auto 0 auto;
     padding: 2rem;
     background: white;
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    overflow: hidden;
+    color: #222;
+}
+
+.auth-form::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('/static/images/logo.png') center center no-repeat;
+    background-size: contain;
+    opacity: 0.20;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.auth-form > * {
+    position: relative;
+    z-index: 1;
 }
 
 .auth-form h1 {
     text-align: center;
     margin-bottom: 2rem;
-    color: var(--text-color);
+    color: #1a1a1a;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.7);
 }
 
 .auth-form .form-group {
@@ -468,22 +525,26 @@ body {
 .auth-form .form-control {
     width: 100%;
     padding: 0.75rem;
-    border: 1px solid var(--border-color);
+    border: 1.5px solid var(--border-color);
     border-radius: 5px;
     font-size: 1rem;
+    background-color: #fff;
+    color: #222;
+    transition: border-color 0.2s;
 }
 
 .auth-form .form-control:focus {
-    border-color: var(--primary-color);
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(244, 216, 244, 0.25);
+    border-color: #a259a2;
+    outline: 2px solid #f4d8f4;
+    background-color: #f9f6fa;
 }
 
 .auth-form label {
     display: block;
     margin-bottom: 0.5rem;
-    color: var(--text-color);
-    font-weight: 500;
+    color: #222;
+    font-weight: 600;
+    letter-spacing: 0.2px;
 }
 
 .auth-form .form-check {
@@ -509,12 +570,26 @@ body {
     width: 100%;
     padding: 0.75rem;
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 700;
+    background-color: #F4D8F4;
+    color: #222;
+    border: none;
+    border-radius: 5px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.auth-form .btn:focus, .auth-form .btn:hover {
+    background-color: #e6c6e6;
+    color: #111;
+    outline: 2px solid #a259a2;
 }
 
 .auth-form .form-error {
-    color: var(--danger-color);
-    font-size: 0.875rem;
+    color: #c82333;
+    font-weight: bold;
+    background: #f8d7da;
+    padding: 0.25em 0.5em;
+    border-radius: 3px;
     margin-top: 0.25rem;
     display: block;
 }
@@ -522,16 +597,18 @@ body {
 .auth-link {
     text-align: center;
     margin-top: 1.5rem;
-    color: var(--secondary-color);
+    color: #444;
+    font-size: 1rem;
 }
 
 .auth-link a {
-    color: var(--primary-color);
+    color: #a259a2;
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 700;
 }
 
-.auth-link a:hover {
+.auth-link a:focus, .auth-link a:hover {
+    color: #6c2b6c;
     text-decoration: underline;
 }
 
@@ -820,4 +897,103 @@ body {
     overflow: visible;
     text-overflow: clip;
     white-space: normal;
+}
+
+/* === ACCESSIBILITY & BEST PRACTICE IMPROVEMENTS === */
+
+body, .container, .main-container, .card, .recipe-card, .recipe-info, .discover-section, .hot-recipes, .user-profile, .user-recipes {
+    color: #222 !important;
+    background-color: #fff;
+}
+
+h1, h2, h3, h4, h5, h6,
+.recipe-header h1,
+.hot-recipes h2,
+.discover-section h1,
+.user-profile h1,
+.user-recipes h2 {
+    color: #1a1a1a !important;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.7);
+}
+
+a, .nav-link {
+    color: #a259a2;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.btn, .btn-primary, .btn-secondary, .btn-danger, .filter-button, .view-recipe-btn, .view-recipe {
+    font-weight: 700;
+    border-radius: 5px;
+    outline: none;
+    border: none;
+    transition: background 0.2s, color 0.2s;
+}
+.btn:focus, .btn:hover,
+.btn-primary:focus, .btn-primary:hover,
+.btn-secondary:focus, .btn-secondary:hover,
+.btn-danger:focus, .btn-danger:hover,
+.filter-button:focus, .filter-button:hover,
+.view-recipe-btn:focus, .view-recipe-btn:hover,
+.view-recipe:focus, .view-recipe:hover {
+    background-color: #e6c6e6 !important;
+    color: #111 !important;
+    outline: 2px solid #a259a2;
+}
+
+.alert, .form-error, .auth-form .form-error {
+    color: #c82333 !important;
+    background: #f8d7da !important;
+    font-weight: bold;
+    border-radius: 3px;
+    padding: 0.25em 0.5em;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.card-title, .recipe-title h3, .recipe-info h3 {
+    color: #1a1a1a !important;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+
+input, select, textarea, .form-control, .search-input, .filter-select {
+    color: #222;
+    background-color: #fff;
+    border: 1.5px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+input:focus, select:focus, textarea:focus, .form-control:focus, .search-input:focus, .filter-select:focus {
+    border-color: #a259a2;
+    outline: 2px solid #f4d8f4;
+    background-color: #f9f6fa;
+}
+
+.navbar, .navbar-container {
+    background-color: var(--primary-color) !important;
+}
+.nav-link {
+    color: #a259a2 !important;
+    text-decoration: none;
+    font-weight: 600;
+}
+.nav-link:focus, .nav-link:hover {
+    color: #6c2b6c !important;
+    outline: 2px solid #a259a2;
+    text-decoration: underline;
+}
+
+.no-recipes, .testimonial, .subtitle {
+    color: #444 !important;
+    font-size: 1.1rem;
+}
+
+*:focus-visible {
+    outline: 2px solid #a259a2 !important;
+    outline-offset: 2px;
 } 
