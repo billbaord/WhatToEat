@@ -90,7 +90,10 @@ def new_recipe():
             protein=form.protein.data,
             author=current_user,
             category_id=form.category.data,
-            image_url=image_url
+            image_url=image_url,
+            prep_time=form.prep_time.data,
+            cook_time=form.cook_time.data,
+            servings=form.servings.data
         )
         db.session.add(recipe)
         db.session.commit()
@@ -137,6 +140,9 @@ def edit_recipe(id):
         recipe.calories = form.calories.data
         recipe.protein = form.protein.data
         recipe.category_id = form.category.data
+        recipe.prep_time = form.prep_time.data
+        recipe.cook_time = form.cook_time.data
+        recipe.servings = form.servings.data
         db.session.commit()
         flash('Your recipe has been updated!')
         return redirect(url_for('main.view_recipe', id=id))

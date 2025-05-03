@@ -19,7 +19,6 @@
                             {% endif %}
                             <div class="recipe-info">
                                 <h3>{{ recipe.title }}</h3>
-                                <p>{{ recipe.description[:100] }}{% if recipe.description|length > 100 %}...{% endif %}</p>
                                 <div class="recipe-actions">
                                     <a href="{{ url_for('main.view_recipe', id=recipe.id) }}" class="view-recipe">View</a>
                                     <a href="{{ url_for('main.edit_recipe', id=recipe.id) }}" class="btn btn-secondary">Edit</a>
